@@ -54,8 +54,12 @@ const ExerciseSummaryScreen = ({ route, navigation }) => {
     try {
       await apiClient.post("/api/workout/records/save", payload);
 
-      Alert.alert("운동 기록이 저장되었습니다!");
-      navigation.goBack();
+      Alert.alert("운동 기록이 저장되었습니다!", "", [
+        {
+          text: "확인",
+          onPress: () => navigation.navigate("Main", { screen: "Balance" }),
+        },
+      ]);
     } catch (e) {
       Alert.alert("저장 실패", "네트워크 오류가 발생했습니다.");
       console.error(e);

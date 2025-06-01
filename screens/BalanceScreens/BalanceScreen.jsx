@@ -39,7 +39,21 @@ export default function BalanceScreen({ navigation }) {
       const input = inputRes.data;
       const left = leftRes.data.balanceScore;
       const right = rightRes.data.balanceScore;
-      const profile = profileRes.data;
+
+      const profile = profileRes.data; // 🔄 먼저 profile 정의
+      const avgScore = (left + right) / 2; // ✅ 위치도 함께 정리
+      console.log("✅ profile.age:", profile.age);
+      console.log("✅ avgScore:", avgScore);
+
+      const percentileRes = await apiClient.get("/api/percentile", {
+        params: {
+          age: profile.age,
+          score: avgScore,
+        },
+      });
+
+      const percentile = percentileRes.data.percentile;
+      console.log("✅ percentile:", percentile);
 
       if (!input?.recentScores?.length) {
         setSummaryText("아직 균형 기록이 없습니다.");
@@ -51,8 +65,7 @@ export default function BalanceScreen({ navigation }) {
             recentScores: input.recentScores,
             leftScore: left,
             rightScore: right,
-            percentile: 85,
-            weakPart: "왼발 균형",
+            percentile: percentile,
             strongPart: input.focusArea || "하체",
             recommendedExercise: input.history[0] || "의자 스쿼트",
           }
@@ -75,6 +88,11 @@ export default function BalanceScreen({ navigation }) {
           const items = summaryLines.map((line) => {
             let [label, ...rest] = line.split(":").map((s) => s.trim());
             const value = rest.join(":");
+
+            // ✅ 최대 20자까지만 표시
+            if (value.length > 20) {
+              value = value.slice(0, 20) + "…"; // 말줄임표 추가
+            }
             // ✅ label에 불필요한 ' - ' 제거
             label = label.replace(/^[-–—]+\s*/, "").trim(); // '–'나 '—' 같은 특수 dash도 포함
 
@@ -98,9 +116,6 @@ export default function BalanceScreen({ navigation }) {
           setSummaryItems(items);
         }
       }
-
-      // ✅ 인기 운동 요청 (항상 수행)
-      const avgScore = (left + right) / 2;
 
       const popRes = await apiClient.post(`${AI_URL}/api/ai/popular`, {
         id: profile.id ?? 0,
@@ -249,7 +264,7 @@ export default function BalanceScreen({ navigation }) {
           <View style={styles.tabContainer}>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate("BalanceManual", { foot: "left" })
+                navigation.navigate("BalanceIntro", { foot: "left" })
               }
               style={styles.tabButton}
             >

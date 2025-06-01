@@ -34,6 +34,7 @@ export default function AnalyzeScreen({ navigation }) {
   const [balanceLeft, setBalanceLeft] = useState([]);
   const [balanceRight, setBalanceRight] = useState([]);
   const [input, setInput] = useState(null);
+  const [recommendedExercise, setRecommendedExercise] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,12 +54,24 @@ export default function AnalyzeScreen({ navigation }) {
           apiClient.get("/api/workout/records/all"),
           apiClient.get("/api/balance/records"),
         ]);
+
         const input = inputRes.data;
         setInput(input); // 추가
         const left = leftRes.data.balanceScore;
         const right = rightRes.data.balanceScore;
         const workoutRecords = workoutRes.data || [];
         const balanceRecords = balanceRes.data || [];
+        const profile = profileRes.data; // 🔄 먼저 profile 정의
+        const avgScore = (left + right) / 2; // ✅ 위치도 함께 정리
+
+        const percentileRes = await apiClient.get("/api/percentile", {
+          params: {
+            age: profile.age,
+            score: avgScore,
+          },
+        });
+
+        const percentile = percentileRes.data.percentile;
 
         if (!workoutRecords.length && !balanceRecords.length) {
           setSummary("아직 기록이 없습니다. 첫 균형을 측정해보세요!");
@@ -74,8 +87,8 @@ export default function AnalyzeScreen({ navigation }) {
           recentScores: input.recentScores,
           leftScore: left,
           rightScore: right,
-          percentile: 85,
-          weakPart: "왼발 균형",
+          percentile: percentile,
+
           strongPart: input.focusArea || "하체",
           recommendedExercise: input.history[0] || "의자 스쿼트",
         });
@@ -84,6 +97,9 @@ export default function AnalyzeScreen({ navigation }) {
             ? summaryRes.data.summary
             : "요약 정보를 불러올 수 없습니다."
         );
+        const recommended =
+          summaryRes.data.recommendedExercise || "의자 스쿼트";
+        setRecommendedExercise(recommended);
 
         const projectionRes = await apiClient.post(
           `${AI_URL}/api/ai/projection`,
@@ -93,28 +109,39 @@ export default function AnalyzeScreen({ navigation }) {
           setProjection(projectionRes.data.projection);
         }
 
-        const durations = workoutRecords.map(
+        const slicedWorkoutRecords = workoutRecords.slice(0, 5).reverse();
+
+        const durations = slicedWorkoutRecords.map(
           (r) => Math.round((r.duration / 60) * 10) / 10
         );
-        const intensities = workoutRecords.map((r) => r.intensityScore);
-        const workoutLabels = workoutRecords.map(
-          (_, i) => `#${workoutRecords.length - i}`
+        const intensities = slicedWorkoutRecords.map((r) => r.intensityScore);
+        const workoutLabels = slicedWorkoutRecords.map((r) =>
+          r.date ? r.date.slice(5) : "날짜 없음"
         );
 
         setChartData([durations, intensities]);
         setChartLabels(workoutLabels);
 
-        const balanceDates = balanceRecords.map(
-          (_, i) => `#${balanceRecords.length - i}`
-        );
-        const leftScores = balanceRecords
-          .filter((r) => r.foot === "left")
-          .map((r) => r.balanceScore);
-        const rightScores = balanceRecords
-          .filter((r) => r.foot === "right")
-          .map((r) => r.balanceScore);
+        // 최근 5개만 가져와서 최신순 → 과거순으로 reverse
+        const slicedBalanceRecords = balanceRecords.slice(0, 5).reverse();
 
-        setBalanceLabels(balanceDates);
+        // 날짜 기준으로 왼발/오른발 점수 매핑
+        const grouped = {};
+        slicedBalanceRecords.forEach((r) => {
+          const date = r.date?.slice(5); // "MM-DD"
+          if (!grouped[date]) grouped[date] = {};
+          grouped[date][r.foot] = r.balanceScore;
+        });
+
+        // 라벨 생성: 날짜 순서대로 (중복 없이)
+        const balanceLabels = Object.keys(grouped);
+
+        // 왼발/오른발 점수 배열 생성 (null일 경우 0 처리)
+        const leftScores = balanceLabels.map((d) => grouped[d].left ?? 0);
+        const rightScores = balanceLabels.map((d) => grouped[d].right ?? 0);
+
+        // 최종 세팅
+        setBalanceLabels(balanceLabels);
         setBalanceLeft(leftScores);
         setBalanceRight(rightScores);
       } catch (e) {
@@ -152,8 +179,16 @@ export default function AnalyzeScreen({ navigation }) {
               <TouchableOpacity
                 style={styles.primaryButton}
                 onPress={() =>
-                  navigation.navigate("ExerciseRecommendationResult")
+                  navigation.navigate("ExerciseDetail", {
+                    exercise: {
+                      name: recommendedExercise,
+                      focusArea: input.focusArea || "하체",
+                      reason:
+                        "최근 밸런스 및 운동 기록을 바탕으로 추천된 운동입니다.",
+                    },
+                  })
                 }
+                disabled={!recommendedExercise} // ✅ optional: 아직 로딩 중일 경우 방지
               >
                 <Text style={styles.primaryButtonText}>
                   🏃 추천 운동 바로 시작

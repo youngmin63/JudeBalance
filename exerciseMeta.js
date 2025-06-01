@@ -19,7 +19,7 @@ const exerciseMeta = {
     focusArea: "코어",
     videoUrl: require("./assets/videos/bird-dog.mp4"),
   },
-  "벽 집고 플랭크": {
+  "벽 짚고 플랭크": {
     reason: "상체와 코어 근육을 동시에 단련합니다.",
     focusArea: "코어",
     videoUrl: require("./assets/videos/wall-plank.mp4"),

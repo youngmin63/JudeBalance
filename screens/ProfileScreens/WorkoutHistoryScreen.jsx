@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { apiClient } from "../../api/api";
 import BackButton from "../BackButton";
@@ -48,39 +48,41 @@ export default function WorkoutHistoryScreen() {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <BackButton />
-      <Text style={styles.title}>내 운동 기록</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F2F3F6" }}>
+      <ScrollView style={styles.container}>
+        <BackButton />
+        <Text style={styles.title}>내 운동 기록</Text>
 
-      <Calendar
-        style={styles.calendar}
-        markingType={"custom"}
-        markedDates={markedDates}
-        onDayPress={(day) => setSelectedDate(day.dateString)}
-        theme={{
-          backgroundColor: "#F2F3F6",
-          calendarBackground: "#F2F3F6",
-          todayTextColor: "#3182F6",
-          arrowColor: "#3182F6",
-          textSectionTitleColor: "#9CA3AF",
-        }}
-      />
+        <Calendar
+          style={styles.calendar}
+          markingType={"custom"}
+          markedDates={markedDates}
+          onDayPress={(day) => setSelectedDate(day.dateString)}
+          theme={{
+            backgroundColor: "#F2F3F6",
+            calendarBackground: "#F2F3F6",
+            todayTextColor: "#3182F6",
+            arrowColor: "#3182F6",
+            textSectionTitleColor: "#9CA3AF",
+          }}
+        />
 
-      {selectedDate && (
-        <View style={styles.recordList}>
-          <Text style={styles.subTitle}>{selectedDate} 운동 기록</Text>
-          {workoutsOnSelectedDate.map((item, idx) => (
-            <View key={idx} style={styles.card}>
-              <Text style={styles.exerciseName}>{item.exerciseName}</Text>
-              <Text style={styles.detail}>
-                {item.completedSets}세트 / {Math.round(item.duration / 60)}분
-              </Text>
-              <Text style={styles.feedback}>{item.feedback}</Text>
-            </View>
-          ))}
-        </View>
-      )}
-    </ScrollView>
+        {selectedDate && (
+          <View style={styles.recordList}>
+            <Text style={styles.subTitle}>{selectedDate} 운동 기록</Text>
+            {workoutsOnSelectedDate.map((item, idx) => (
+              <View key={idx} style={styles.card}>
+                <Text style={styles.exerciseName}>{item.exerciseName}</Text>
+                <Text style={styles.detail}>
+                  {item.completedSets}세트 / {Math.round(item.duration / 60)}분
+                </Text>
+                <Text style={styles.feedback}>{item.feedback}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     marginBottom: 12,
-    marginTop: 60,
+    marginTop: 40,
   },
   calendar: {
     borderRadius: 16,

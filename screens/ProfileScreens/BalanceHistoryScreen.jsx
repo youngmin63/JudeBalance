@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: "700",
-    marginBottom: 12,
+    marginBottom: 22,
     marginTop: 40,
   },
   card: {

@@ -10,6 +10,7 @@ import LaunchScreen from "./screens/OnBoaringScreens/LaunchScreen.jsx";
 import OnboardingScreen2 from "./screens/OnBoaringScreens/OnBoarding2.jsx";
 import OnboardingScreen3 from "./screens/OnBoaringScreens/OnBoarding3.jsx";
 import OnboardingScreen4 from "./screens/OnBoaringScreens/OnBoarding4.jsx";
+import OnboardingScreen from "./screens/OnBoaringScreens/OnBoardingScreen.jsx";
 import forgotPwScreen from "./screens/SingupScreens/ForgotPwScreen.jsx";
 import LoginScreen from "./screens/SingupScreens/LoginScreen.jsx";
 import SignupScreen from "./screens/SingupScreens/SignupScreen.jsx";
@@ -51,8 +52,12 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        initialRouteName="Launch"
+        screenOptions={{ headerShown: false }}
+      >
         {/* ✅ 온보딩/로그인 관련 화면 */}
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Launch" component={LaunchScreen} />
         <Stack.Screen name="Onboarding2" component={OnboardingScreen2} />
         <Stack.Screen name="Onboarding3" component={OnboardingScreen3} />

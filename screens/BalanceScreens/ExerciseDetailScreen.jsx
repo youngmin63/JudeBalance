@@ -17,10 +17,14 @@ const { width } = Dimensions.get("window");
 export default function ExerciseDetailScreen({ route, navigation }) {
   const { exercise } = route.params;
   const meta = exerciseMeta[exercise.name] || {};
+  const isLowerBody = meta.focusArea === "하체";
+  const videoBoxStyle = {
+    ...styles.videoBox,
+    justifyContent: isLowerBody ? "flex-end" : "center",
+  };
 
   const videoUrl = meta.videoUrl;
-  const defaultCaution = `
-  각 세트는 12회씩 반복합니다.
+  const defaultCaution = `각 세트는 15회씩 반복합니다.
   각 세트를 마칠 때마다 해당 세트 버튼을 눌러 완료를 표시해주세요.`;
 
   const caution = `${defaultCaution}\n\n${meta.caution || ""}`;
@@ -82,21 +86,19 @@ export default function ExerciseDetailScreen({ route, navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <BackButton />
       <Text style={styles.totalTime}>{formatTime(totalTimer)}</Text>
+      <BackButton style={styles.backBtn} />
 
-      <Text style={styles.title}>{exercise.name}</Text>
+      <Text style={styles.titleCentered}>{exercise.name}</Text>
 
       <View style={styles.videoBox}>
         {videoUrl ? (
           <Video
             source={videoUrl}
-            rate={1.0}
-            volume={1.0}
-            isMuted={true}
-            resizeMode="cover"
+            resizeMode="cover" // ✅ 전부 cover로 통일
             shouldPlay
             isLooping
+            isMuted
             style={styles.video}
           />
         ) : (
@@ -181,26 +183,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#666",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#232222",
-    textAlign: "center",
-    marginTop: 20,
-  },
+
   videoBox: {
     marginTop: 24,
+    height: 500,
+    backgroundColor: "#000",
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#E5EAF2",
-    elevation: 2,
   },
+
   video: {
     width: "100%",
-
-    height: 380, // 기존 240 → 320으로 증가
-    backgroundColor: "#000", // 배경 깔끔하게
+    height: "100%",
+    backgroundColor: "#000",
   },
+
   videoFallback: {
     fontSize: 16,
     padding: 40,
@@ -216,7 +213,7 @@ const styles = StyleSheet.create({
   setsBox: {
     flexDirection: "row",
     justifyContent: "space-around",
-    
+
     marginBottom: 30,
   },
   setCard: {
@@ -304,5 +301,30 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 15,
     fontWeight: "600",
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "flex-end", // ✅ 버튼에 맞춰 텍스트를 아래로
+    marginTop: 10,
+    gap: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#232222",
+  },
+  backBtn: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 10, // 영상 위에 표시되도록
+  },
+
+  titleCentered: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#232222",
+    textAlign: "center",
+    marginTop: 50, // BackButton과 높이 맞춤
   },
 });

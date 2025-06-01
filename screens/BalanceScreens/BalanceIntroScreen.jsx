@@ -23,6 +23,11 @@ export default function BalanceIntroScreen({ navigation }) {
           <Text style={styles.instruction}>
             ・반드시 눈을 감고 자세를 유지해 주세요.
           </Text>
+          <Text style={styles.instruction}>
+            ・중간에 발이 땅에 떨어지면 화면을 2번 터치하여 다음 발로
+            넘어가주세요.
+          </Text>
+          <Text style={styles.instruction}>・🦶 측정 순서: 왼발 → 오른발</Text>
         </View>
 
         <TouchableOpacity

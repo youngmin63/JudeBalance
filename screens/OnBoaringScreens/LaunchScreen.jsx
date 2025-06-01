@@ -1,37 +1,49 @@
-import React, { useEffect } from "react";
-import { SafeAreaView, View, ScrollView, Text, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useRef } from "react";
+import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import Animated, { FadeIn, runOnJS } from "react-native-reanimated";
+
 export default function LaunchScreen({ navigation }) {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.navigate("Onboarding2");
-    }, 2000); // 2초 후 이동
-
-    return () => clearTimeout(timer); // 언마운트 시 클린업
-  }, []);
-
+  const hasAnimated = useRef(false); // 애니메이션이 끝났는지 추적
 
   useEffect(() => {
     const clearExpiredToken = async () => {
       const token = await AsyncStorage.getItem("usertoken");
-      // 원하면 JWT decode 해서 만료 검사도 가능
       if (token) {
-        await AsyncStorage.removeItem("usertoken"); // 앱 재시작 시 항상 초기화
+        await AsyncStorage.removeItem("usertoken");
       }
     };
     clearExpiredToken();
   }, []);
 
+  const handleAfterFadeIn = () => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    // FadeIn 끝난 뒤 1.5초 뒤에 이동
+    setTimeout(() => {
+      navigation.navigate("Onboarding");
+    }, 1500);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.view}>
-          <Text style={styles.text}>{"\n균형\n\n마당"}</Text>
+          <Animated.Text
+            entering={FadeIn.duration(1000).withCallback(() =>
+              runOnJS(handleAfterFadeIn)()
+            )}
+            style={styles.text}
+          >
+            {"\n균형\n\n마당"}
+          </Animated.Text>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

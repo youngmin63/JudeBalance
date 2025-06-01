@@ -6,7 +6,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-
 } from "react-native";
 import BackButton from "../BackButton";
 
@@ -22,8 +21,11 @@ export default function BalanceManualScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <BackButton />
+      <BackButton style={styles.BackButton} />
       <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.footLabel}>
+          🦶 {foot === "left" ? "왼발" : "오른발"} 측정 중
+        </Text>
         <Text style={styles.title}>🧍‍♀️ 측정 전 자세 안내</Text>
 
         <View style={styles.videoBox}>
@@ -59,6 +61,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F2F3F6",
+    padding: 16,
   },
   content: {
     padding: 24,
@@ -73,7 +76,7 @@ const styles = StyleSheet.create({
   },
   videoBox: {
     width: "100%",
-    height: 500,
+    height: 400,
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     overflow: "hidden",
@@ -111,5 +114,14 @@ const styles = StyleSheet.create({
   fullImage: {
     width: "100%",
     height: "100%",
+  },
+  BackButton: {
+    marginLeft: 10,
+  },
+  footLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#3182F6",
+    marginBottom: 12,
   },
 });

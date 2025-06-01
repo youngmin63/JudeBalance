@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { Accelerometer, Gyroscope } from "expo-sensors";
 import * as Speech from "expo-speech";
 import React, { useEffect, useRef, useState } from "react";
@@ -11,13 +10,14 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import BackButton from "../BackButton";
 import { apiClient } from "../../api/api"; // baseURL 통합된 axios 인스턴스 사용
+import BackButton from "../BackButton";
 
 export default function BalanceTestScreen2({ navigation, route }) {
   const { foot = "left" } = route.params;
   const [isMeasuring, setIsMeasuring] = useState(false);
   const [timer, setTimer] = useState(0);
+  const timerRefVal = useRef(0); // 👈 추가
 
   const gyroData = useRef([]);
   const accelData = useRef([]);
@@ -100,8 +100,12 @@ export default function BalanceTestScreen2({ navigation, route }) {
 
     timerRef.current = setInterval(() => {
       setTimer((prev) => {
-        if (prev + 1 >= 20) stopMeasurement();
-        return prev + 1;
+        const next = prev + 1;
+        timerRefVal.current = next; // 👈 항상 ref에도 반영
+        if (next >= 20) {
+          setTimeout(() => stopMeasurement(), 50);
+        }
+        return next;
       });
     }, 1000);
   };
@@ -146,7 +150,8 @@ export default function BalanceTestScreen2({ navigation, route }) {
         balanceScore: score,
         gender,
         age,
-        duration: timer,
+        duration: timerRefVal.current,
+
         foot,
         gyro: gyroData.current,
         accel: accelData.current,
@@ -169,11 +174,9 @@ export default function BalanceTestScreen2({ navigation, route }) {
   };
 
   return (
-    
     <TouchableWithoutFeedback onPress={handleDoubleTap}>
-      
       <SafeAreaView style={styles.container}>
-      <BackButton />
+        <BackButton style={styles.BackButton} />
         <View style={styles.center}>
           {isMeasuring ? (
             <View style={styles.measureContainer}>
@@ -263,5 +266,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 24,
     paddingHorizontal: 16,
+  },
+  BackButton: {
+    marginLeft: 10,
   },
 });
