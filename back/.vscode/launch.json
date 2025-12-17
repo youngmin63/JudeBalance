@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-BackendApplication<Balance>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.judebalance.backend.BackendApplication",
+      "projectName": "Balance",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-BackendApplication<backend-Balance>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.judebalance.backend.BackendApplication",
+      "projectName": "backend-Balance",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
