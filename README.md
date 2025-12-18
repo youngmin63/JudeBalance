@@ -10,10 +10,15 @@ appropriate exercises based on individual balance performance.
 
 ## Demo
 
-![Demo Screenshot 1](assets/IMG_9516.jpg)
-![Demo Screenshot 2](assets/IMG_9527.PNG)
-![Demo Screenshot 3](assets/IMG_9529.jpg)
-![Demo Screenshot 4](assets/IMG_9530.PNG)
+<p align="center">
+  <img src="assets/IMG_9516.jpg" width="45%" />
+  <img src="assets/IMG_9527.PNG" width="45%" />
+</p>
+
+<p align="center">
+  <img src="assets/IMG_9529.jpg" width="45%" />
+  <img src="assets/IMG_9530.PNG" width="45%" />
+</p>
 
 ---
 
