@@ -80,20 +80,15 @@ and maintainability.
 
 ## Challenges & Solutions
 
-### Challenge 1: Converting raw sensor data into a meaningful balance score
+### Challenge 1: Handling incomplete or early-terminated balance measurements
 **Solution:**  
-Adopted a fixed 20-second measurement approach followed by a stability-based score conversion,
-ensuring consistent and comparable balance results.
+Users occasionally failed to maintain balance for the full measurement duration or manually stopped the test midway. Treating these cases as zero scores resulted in misleading outcomes and poor user experience.
+To address this, a duration-aware scoring strategy was designed, where the final balance score is proportionally adjusted based on the actual time the user maintained the posture. This approach preserves result fairness while still reflecting reduced stability when measurements are interrupted.
 
 ### Challenge 2: Managing complex recommendation logic without overloading the frontend
 **Solution:**  
 Separated the exercise recommendation logic into a dedicated FastAPI server, keeping the frontend
 lightweight and improving modularity.
-
-### Challenge 3: Supporting personalised recommendations based on individual balance differences
-**Solution:**  
-Incorporated left and right foot balance scores into the recommendation logic to reflect
-individual stability characteristics.
 
 ---
 
@@ -114,6 +109,7 @@ individual stability characteristics.
 - Structuring a project for maintainability and future expansion
 
 ---
+
 
 
 
